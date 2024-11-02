@@ -1,0 +1,216 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <malloc.h>
+#include <locale.h>
+struct list
+    {
+      int inf; // поле данных
+      struct list *next; // указатель на следующий элемент
+      struct list *prev; // указатель на предыдущий элемент
+    };
+struct list* Glue(struct list *First, struct list *First2) //функция склейки двух списков в третий результирующий
+{
+    struct list *T,*T2,*T3,*T4;
+	struct list	*F3, *P3;
+	int help1=0, help2=0;
+	F3 = First;
+	T3 = First2;
+	T4 = First;
+	while (1)
+	{
+		T = T4;
+		T2 = T3;
+		if (T2!=NULL)
+			T3 = T2->next;
+		if (T!=NULL)
+			T4 = T->next;
+		if (help1 == 0 && help2 == 0)
+		{
+			T->next = T2;
+			T2->prev = T;
+			if (T4 != NULL)
+				T2->next = T4;
+			else
+				T2->next = T3;
+		}
+		if (help1 == 1 && help2 == 1)
+		{
+			break;
+		}
+		if (help1 == 1)
+		{
+			T2->next = T3;
+		}
+		if (help2 == 1)
+		{
+			T->next = T4;
+		}
+
+		if (T3 == NULL)
+		{
+			help2 = 1;
+		}
+		if (T4 == NULL)
+		{
+			help1 = 1;
+		}
+	}
+    return F3;
+}
+void Output(struct list *F) //фунция вывода списка
+{
+    struct list *T;
+    T=F;
+    while(T!=NULL)
+    {
+        printf("%d ",T->inf);
+        T=T->next;
+    }
+}
+int main()
+{
+    struct list *F,*P,*T;
+    struct list *F2,*P2,*T2;
+    struct list *F3,*P3,*T3;
+	int a, count = 0, count2 = 0, x;
+	setlocale(0, "");
+    F=P=T=NULL;
+    F2=P2=T2=NULL;
+    F3=P3=T3=NULL;
+ 
+    //printf("Вас привествует программа для склейки двух ваших списков.\n");
+    //printf("Программа склеит списки по правилу, первый элемент первого\n");
+    //printf("первый элемент второго, второй первого, второй второго и т.д.\n");
+    //printf("Список должен состоять из целых чисел!!!\n");
+    while(1)    //первый список
+    {
+        printf("Vi xotite vvesti pervii spisok? 1(yes)/0(no)\n");
+        x=scanf("%d",&a); //проверка
+        if (x==0)
+        {
+            printf("Input ancorrect data\n");
+            return 1;
+        }
+        if (a!=0 && a!=1)
+        {
+			printf("Input ancorrect data\n");
+            return 1;
+        }
+        if (!a)
+        {
+            break;
+        }
+        T =(struct list *)malloc(sizeof(struct list));
+        if (T==NULL)
+        {
+            printf("Ne udalos videlit pam9t\n");
+            free(F);
+            return 1;
+        }
+        T->next=NULL;
+        T->prev=NULL;
+        printf("vvedite element spiska\n");
+        x=scanf("%d",&T->inf);    //проверка
+        if (x==0)
+        {
+			printf("Input ancorrect data\n");
+            return 1;
+        }
+        if (F==NULL)
+        {
+            F=T;
+            P=T;
+        }
+        else
+        {
+            T->prev=P;
+            P->next=T;
+            P=T;
+        }
+        count++;
+    }
+    while(1)    //второй список
+    {
+		printf("Vi xotite vvesti vtoroi spisok? 1(yes)/0(no)\n");
+        x=scanf("%d",&a); //проверка
+        if (x==0)
+        {
+            printf("Input ancorrect data\n");
+            return 1;
+        }
+        if (a!=0 && a!=1)
+        {
+            printf("Input ancorrect data\n");
+            return 1;
+        }
+        if (!a)
+        {
+            break;
+        }
+        T2 =(struct list *)malloc(sizeof(struct list));
+        if (T2==NULL)
+        {
+            printf("Ne ydalos videlit pam9t\n");
+            free(F);
+            free(F2);
+            return 1;
+        }
+        T2->next=NULL;
+        T2->prev=NULL;
+        printf("vvedite element spiska\n");
+        x=scanf("%d",&T2->inf);    //проверка
+        if (x==0)
+        {
+            printf("Input ancorrect data\n");
+            return 1;
+        }
+        if (F2==NULL)
+        {
+            F2=T2;
+            P2=T2;
+        }
+        else
+        {
+            T2->prev=P2;
+            P2->next=T2;
+            P2=T2;
+        }
+        count2++;
+    }
+    T=F;
+    if (count==0 && count2==0)
+    {
+        printf("Nelz9 skleit chego net\n");
+        return 0;
+    }
+    printf("pervii spisok\n");  //вывод первого
+    Output(F);
+    printf("\nvtoroi spisok\n");    //вывод второго
+    Output(F2);
+    if (count2==0)
+    {
+        count-=1;
+        printf("\nrezyltiryishiu spisok ");
+        Output(F);
+        printf("\nlishnii elementi %d",count);
+        free(F);
+        return 0;
+    }
+    if (count==0)
+    {
+        printf("\nrezyltiryishiu spisok ");
+        Output(F2);
+        printf("\nlishnii elementi %d",count2);
+        free(F2);
+        return 0;
+    }
+    F3=Glue(F, F2); //склейка
+    printf("\nrezyltiryishiu spisok\n");    //вывод результирующего списка
+    Output(F3);
+    count -= count2;
+    if (count<0)
+        count*=-1;
+    printf("\nlishnii elementi %d",count); //вывод лишних элементов  
+    free(F3); //освобождение задейственной памяти
+    return 0;
+}
